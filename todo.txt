@@ -7,12 +7,3 @@ Reorganize jobbob to make him easier to call (package structure)
                 I'm thinking collection of classes called as needed in the interpreter
 	Put into package structure
 Find out how to do multiprocessing on jobbob so it doesn't take 40 minutes to characterize as dinuclear
-
-Rambling:
-    .log files are generally generated any time a .com file is run, but not always (sometimes lone .com files were attempted, but failed fast)
-    Should jobbob be able to make a leafdirectory for any kind of file?
-        Subclass of leafdirectory for .log files?
-            Yes, I like that idea. Flexible
-Scope:
-    Provide utility classes for managing directories of files
-        Classes can be subclassed for each type of file needing to be analyzed
