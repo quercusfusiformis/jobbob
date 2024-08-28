@@ -1,5 +1,0 @@
-Features:
-    File info
-    File sorting
-    File submitting/resubmitting
-    
