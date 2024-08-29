@@ -1,9 +1,9 @@
 Find out how to call jobbob from far away (add to python search dir?)
-    DONE: add to PYTHONPATH in .bash_profile
+    Done. Added to PYTHONPATH in .bash_profile
 Reorganize jobbob to make him easier to call (package structure)
-	Reformat jobbob to separate classes and scripts
-		Class design might take a hot second
-            Should he be a program with lots of options, or a collection of classes and scripts, called as needed?
-                I'm thinking collection of classes called as needed in the interpreter
-	Put into package structure
+	Done. Settled on Branch, Node, and Leaflet structure classes, with Mover classes still to be implemented
 Find out how to do multiprocessing on jobbob so it doesn't take 40 minutes to characterize as dinuclear
+    Done. Multiprocessing implemented using ProcessPoolExecutor and num_generating_processes.py
+Scale the amount of workers used for Branch and Node creation to the amount of Nodes or Leaflets created during the process
+Implement moving files based on search results using a FileMover type classes
+Implement auto-rerunning files based on failure results (using a script, mixing python and bash?)
