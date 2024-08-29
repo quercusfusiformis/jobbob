@@ -1,16 +1,20 @@
 from typing import List
 import os
+from concurrent.futures import ProcessPoolExecutor
 
 from comleaflet import ComLeaflet
 from logleaflet import LogLeaflet
 from node import Node
+import num_generating_processes as ngp
 
 class Branch:
     def __init__(self, dirpath: str):
         self.path: str = dirpath
-        self.nodes: List[Node] = list()
-        for subdirpath in self.get_subdirs():
-            self.nodes.append(Node(subdirpath))
+        with ProcessPoolExecutor(ngp.NODE_GENERATING_PROCESSES) as p:
+            self.nodes: List[Node] = [node for node in p.map(Node, self.get_subdirs())]
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(path:{self.path},nodes:{self.nodes})"
     
     def get_subdirs(self) -> List[str]:
         subdirpaths: List[str] = list()
@@ -35,6 +39,3 @@ class Branch:
         for node in self.nodes:
             coms_to_rerun.extend(node.get_coms_to_rerun())
         return coms_to_rerun
-    
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(path:{self.path},nodes:{self.nodes})"

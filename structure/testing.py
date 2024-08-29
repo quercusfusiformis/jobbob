@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     ## Branch
     branch = Branch("/home/breadbear/proj/jobbob/data")
-    # print(branch)
+    print(branch)
     # print(branch.get_subdirs())
     # print(branch.get_incomplete_logs())
     # print(branch.get_unrun_coms())
