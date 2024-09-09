@@ -4,15 +4,15 @@ import glob
 from concurrent.futures import ProcessPoolExecutor
 
 from leaflet import Leaflet
-from comleaflet import ComLeaflet
-from logleaflet import LogLeaflet
+from gaussianinputleaflet import GaussianInputLeaflet
+from gaussianoutputleaflet import GaussianOutputLeaflet
 import num_generating_processes as ngp
 
 def create_respective_leaflet(filepath: str) -> Leaflet:
-    if ".com" in filepath:
-        return ComLeaflet(filepath)
+    if ".com" in filepath or ".gjf" in filepath:
+        return GaussianInputLeaflet(filepath)
     elif ".log" in filepath:
-        return LogLeaflet(filepath)
+        return GaussianOutputLeaflet(filepath)
     else:
         return Leaflet(filepath)
 
@@ -37,19 +37,19 @@ class Node:
     def get_leaflets_bytype(self, desiredclass) -> List[Leaflet]:
         return [leaflet for leaflet in self.leaflets if isinstance(leaflet, desiredclass)]
     
-    def get_incomplete_logs(self) -> List[LogLeaflet]:
-        return [logleaflet for logleaflet in self.get_leaflets_bytype(LogLeaflet) if not logleaflet.is_completed()]
+    def get_incomplete_gaussian_outputs(self) -> List[GaussianOutputLeaflet]:
+        return [outputleaflet for outputleaflet in self.get_leaflets_bytype(GaussianOutputLeaflet) if not outputleaflet.is_completed()]
     
-    def has_incomplete_logs(self) -> bool:
-        return len(self.get_incomplete_logs()) > 0
+    def has_incomplete_gaussian_outputs(self) -> bool:
+        return len(self.get_incomplete_gaussian_outputs()) > 0
     
-    def get_unrun_coms(self) -> List[ComLeaflet]:
-        logbasenames: List[str] = [logleaflet.get_path_noext() for logleaflet in self.get_leaflets_bytype(LogLeaflet)]
-        combasenames: List[str] = [comleaflet.get_path_noext() for comleaflet in self.get_leaflets_bytype(ComLeaflet)]
-        return [ComLeaflet(f"{combasename}.com") for combasename in combasenames if combasename not in logbasenames]
+    def get_unrun_gaussian_inputs(self) -> List[GaussianInputLeaflet]:
+        output_basenames: List[str] = [outputleaflet.get_path_noext() for outputleaflet in self.get_leaflets_bytype(GaussianOutputLeaflet)]
+        return [inputleaflet for inputleaflet in self.get_leaflets_bytype(GaussianInputLeaflet) if inputleaflet.get_path_noext() not in output_basenames]
     
-    def get_coms_to_rerun(self) -> List[ComLeaflet]:
-        coms_to_rerun: List[ComLeaflet] = list()
-        coms_to_rerun.extend([ComLeaflet(f"{logleaflet.get_path_noext()}.com") for logleaflet in self.get_incomplete_logs()])
-        coms_to_rerun.extend(self.get_unrun_coms())
-        return coms_to_rerun
+    def get_gaussian_inputs_to_rerun(self) -> List[GaussianInputLeaflet]:
+        inputs_to_rerun: List[GaussianInputLeaflet] = list()
+        failed_output_basenames: List[str] = [outputleaflet.get_path_noext() for outputleaflet in self.get_incomplete_gaussian_outputs()]
+        inputs_to_rerun.extend([inputleaflet for inputleaflet in self.get_leaflets_bytype(GaussianInputLeaflet) if inputleaflet.get_path_noext() in failed_output_basenames])
+        inputs_to_rerun.extend(self.get_unrun_gaussian_inputs())
+        return inputs_to_rerun

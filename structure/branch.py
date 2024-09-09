@@ -2,8 +2,8 @@ from typing import List
 import os
 from concurrent.futures import ProcessPoolExecutor
 
-from comleaflet import ComLeaflet
-from logleaflet import LogLeaflet
+from gaussianinputleaflet import GaussianInputLeaflet
+from gaussianoutputleaflet import GaussianOutputLeaflet
 from node import Node
 import num_generating_processes as ngp
 
@@ -22,20 +22,20 @@ class Branch:
             subdirpaths.extend([os.path.join(root, dirname) for dirname in dirs])
         return subdirpaths
     
-    def get_incomplete_logs(self) -> List[LogLeaflet]:
-        incomplete_logs: List[LogLeaflet] = list()
+    def get_incomplete_gaussian_outputs(self) -> List[GaussianOutputLeaflet]:
+        incomplete_outputs: List[GaussianOutputLeaflet] = list()
         for node in self.nodes:
-            incomplete_logs.extend(node.get_incomplete_logs())
-        return incomplete_logs
+            incomplete_outputs.extend(node.get_incomplete_gaussian_outputs())
+        return incomplete_outputs
 
-    def get_unrun_coms(self) -> List[ComLeaflet]:
-        unrun_coms: List[LogLeaflet] = list()
+    def get_unrun_gaussian_inputs(self) -> List[GaussianInputLeaflet]:
+        unrun_inputs: List[GaussianInputLeaflet] = list()
         for node in self.nodes:
-            unrun_coms.extend(node.get_unrun_coms())
-        return unrun_coms
+            unrun_inputs.extend(node.get_unrun_gaussian_inputs())
+        return unrun_inputs
 
-    def get_coms_to_rerun(self) -> List[ComLeaflet]:
-        coms_to_rerun: List[ComLeaflet] = list()
+    def get_gaussian_inputs_to_rerun(self) -> List[GaussianInputLeaflet]:
+        inputs_to_rerun: List[GaussianInputLeaflet] = list()
         for node in self.nodes:
-            coms_to_rerun.extend(node.get_coms_to_rerun())
-        return coms_to_rerun
+            inputs_to_rerun.extend(node.get_gaussian_inputs_to_rerun())
+        return inputs_to_rerun

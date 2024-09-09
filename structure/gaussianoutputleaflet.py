@@ -3,7 +3,7 @@ from leaflet import Leaflet
 NUM_LINES_IN_COMPLETION_SEARCH: int = 5
 NUM_LINES_IN_ERROR_SEARCH: int = 10
 
-class LogLeaflet(Leaflet):
+class GaussianOutputLeaflet(Leaflet):
     def is_completed(self) -> bool:
         for line in self.tail(NUM_LINES_IN_COMPLETION_SEARCH).splitlines():
             if "Normal termination of Gaussian" in line:

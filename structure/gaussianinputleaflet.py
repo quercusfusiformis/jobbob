@@ -2,7 +2,7 @@ from leaflet import Leaflet
 
 NUM_LINES_IN_HEADER_SEARCH: int = 5
 
-class ComLeaflet(Leaflet):
+class GaussianInputLeaflet(Leaflet):
     def get_nprocshared(self) -> int:
         for line in self.head(NUM_LINES_IN_HEADER_SEARCH).splitlines():
             if "nprocshared" in line.lower():
