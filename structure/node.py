@@ -19,7 +19,9 @@ def create_respective_leaflet(filepath: str) -> Leaflet:
 class Node:
     def __init__(self, dirpath: str):
         self.path: str = dirpath
-        with ProcessPoolExecutor(ngp.LEAFLET_GENERATING_PROCESSES) as p:
+        num_executors: int = round(len(self.get_subfiles()) / ngp.NODE_EXECUTOR_DIVISOR)
+        if num_executors < 1: num_executors = 1
+        with ProcessPoolExecutor(num_executors) as p:
             self.leaflets: List[Leaflet] = [leaflet for leaflet in p.map(create_respective_leaflet, self.get_subfiles())]
 
     def __repr__(self) -> str:

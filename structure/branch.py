@@ -10,7 +10,9 @@ import num_generating_processes as ngp
 class Branch:
     def __init__(self, dirpath: str):
         self.path: str = dirpath
-        with ProcessPoolExecutor(ngp.NODE_GENERATING_PROCESSES) as p:
+        num_executors: int = round(len(self.get_subdirs()) / ngp.BRANCH_EXECUTOR_DIVISOR)
+        if num_executors < 1: num_executors = 1
+        with ProcessPoolExecutor(num_executors) as p:
             self.nodes: List[Node] = [node for node in p.map(Node, self.get_subdirs())]
 
     def __repr__(self) -> str:
