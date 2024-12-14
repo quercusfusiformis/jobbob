@@ -5,5 +5,6 @@ Reorganize jobbob to make him easier to call (package structure)
 Find out how to do multiprocessing on jobbob so it doesn't take 40 minutes to characterize as dinuclear
     Done. Multiprocessing implemented using ProcessPoolExecutor and num_generating_processes.py
 Scale the amount of workers used for Branch and Node creation to the amount of Nodes or Leaflets created during the process
+    Implemented a naive version of this where num_subfiles is divided by 3.0 and rounded. Need to do performance tests
 Implement moving files based on search results using a FileMover type classes
 Implement auto-rerunning files based on failure results (using a script, mixing python and bash?)
