@@ -19,7 +19,6 @@ class Branch:
             num_executors = 61
         with ProcessPoolExecutor(num_executors) as p:
             self.nodes: tuple[Node] = tuple(node for node in p.map(Node, subdirs))
-        # self.nodes: tuple[Node] = tuple(Node(pathstr=str(subdir)) for subdir in subdirs)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(path:{self.path},nodes:{self.nodes})"

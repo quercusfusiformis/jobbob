@@ -9,20 +9,14 @@ class Leaflet:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(path:\"{self.path}\")"
     
-    def get_path(self) -> Path:
-        return self.path
-    
-    def get_contents(self) -> str:
-        return self.contents
-
     def head(self, numlines: int) -> str:
-        lines: list[str] = self.get_contents()
+        lines: list[str] = self.contents
         if numlines < 1:
             raise ValueError(f"Parameter numlines must be a positive integer. Your value: {numlines}")
         return '\n'.join(lines[:numlines])
 
     def tail(self, numlines: int) -> str:
-        lines: list[str] = self.get_contents()
+        lines: list[str] = self.contents
         if numlines < 1:
             raise ValueError(f"Parameter numlines must be a positive integer. Your value: {numlines}")
         return '\n'.join(lines[-numlines:])

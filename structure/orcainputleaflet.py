@@ -1,16 +1,18 @@
 from leaflet import Leaflet
 
-NUM_LINES_IN_HEADER_SEARCH: int = 5
+NUM_LINES_IN_HEADER_SEARCH: int = 15
 
 class OrcaInputLeaflet(Leaflet):
-    def get_nprocshared(self) -> int:
+    def get_nprocs(self) -> int:
         for line in self.head(NUM_LINES_IN_HEADER_SEARCH).splitlines():
-            if "nprocshared" in line.lower():
-                return int(line.split('=')[-1])
+            if "pal" in line.lower():
+                return int(line.lower().split("pal")[-1].split()[0])
+            elif "nprocs" in line.lower():
+                return int(line.split()[-1])
         return None
 
-    def get_mem(self) -> str:
+    def get_maxcore(self) -> str:
         for line in self.head(NUM_LINES_IN_HEADER_SEARCH).splitlines():
-            if "mem" in line.lower():
-                return line.split('=')[-1]
+            if "maxcore" in line.lower():
+                return line.split()[-1]
         return None
