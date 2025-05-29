@@ -1,42 +1,43 @@
-import os
+from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
 
+import num_generating_processes as ngp
+from node import Node
 from gaussianinputleaflet import GaussianInputLeaflet
 from gaussianoutputleaflet import GaussianOutputLeaflet
-from node import Node
-import num_generating_processes as ngp
+from orcainputleaflet import OrcaInputLeaflet
+from orcaoutputleaflet import OrcaOutputLeaflet
 
 class Branch:
-    def __init__(self, dirpath: str):
-        self.path: str = dirpath
-        num_executors: int = round(len(self.get_subdirs()) / ngp.BRANCH_EXECUTOR_DIVISOR)
-        if num_executors < 1: num_executors = 1
+    def __init__(self, pathstr: str):
+        self.path: Path = Path(pathstr)
+        subdirs: tuple[Path] = self.get_subdirs()
+        num_executors: int = round(len(subdirs) / ngp.BRANCH_EXECUTOR_DIVISOR)
+        if num_executors < 1:
+            num_executors = 1
+        elif num_executors > 61:
+            num_executors = 61
         with ProcessPoolExecutor(num_executors) as p:
-            self.nodes: list[Node] = [node for node in p.map(Node, self.get_subdirs())]
+            self.nodes: tuple[Node] = tuple(node for node in p.map(Node, subdirs))
+        # self.nodes: tuple[Node] = tuple(Node(pathstr=str(subdir)) for subdir in subdirs)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(path:{self.path},nodes:{self.nodes})"
     
-    def get_subdirs(self) -> list[str]:
-        subdirpaths: list[str] = list()
-        for root, dirs, files in os.walk(self.path):
-            subdirpaths.extend([os.path.join(root, dirname) for dirname in dirs])
-        return subdirpaths
+    def get_subdirs(self) -> tuple[Path]:
+        subdir_paths: list[Path] = list()
+        for path, dirnames, filenames in self.path.walk():
+            subdir_paths.extend(tuple(path.joinpath(dirname) for dirname in dirnames))
+        return tuple(subdir_paths)
     
-    def get_incomplete_gaussian_outputs(self) -> list[GaussianOutputLeaflet]:
+    def get_incomplete_gaussian_outputs(self) -> tuple[GaussianOutputLeaflet]:
         incomplete_outputs: list[GaussianOutputLeaflet] = list()
         for node in self.nodes:
             incomplete_outputs.extend(node.get_incomplete_gaussian_outputs())
-        return incomplete_outputs
+        return tuple(incomplete_outputs)
 
-    def get_unrun_gaussian_inputs(self) -> list[GaussianInputLeaflet]:
+    def get_unrun_gaussian_inputs(self) -> tuple[GaussianInputLeaflet]:
         unrun_inputs: list[GaussianInputLeaflet] = list()
         for node in self.nodes:
             unrun_inputs.extend(node.get_unrun_gaussian_inputs())
-        return unrun_inputs
-
-    def get_gaussian_inputs_to_rerun(self) -> list[GaussianInputLeaflet]:
-        inputs_to_rerun: list[GaussianInputLeaflet] = list()
-        for node in self.nodes:
-            inputs_to_rerun.extend(node.get_gaussian_inputs_to_rerun())
-        return inputs_to_rerun
+        return tuple(unrun_inputs)
