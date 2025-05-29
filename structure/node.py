@@ -21,16 +21,16 @@ def create_respective_leaflet(path: Path) -> Leaflet:
 class Node:
     def __init__(self, pathstr: str):
         self.path: Path = Path(pathstr)
-        self.leaflets: tuple[Leaflet] = tuple(create_respective_leaflet(path=filepath) for filepath in self.get_subfiles())
+        self.leaflets: tuple[Leaflet] = tuple(create_respective_leaflet(path=filepath) for filepath in self.get_subfilepaths())
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(path:{self.path},leaflets:{self.leaflets})"
     
-    def get_subfiles(self) -> tuple[Path]:
-        subfile_paths: list[Path] = list()
+    def get_subfilepaths(self) -> tuple[Path]:
+        subfilepaths: list[Path] = list()
         for path, dirnames, filenames in self.path.walk():
-            subfile_paths.extend(tuple(path.joinpath(filename) for filename in filenames))
-        return subfile_paths
+            subfilepaths.extend(tuple(path.joinpath(filename) for filename in filenames))
+        return subfilepaths
 
     def get_leaflets(self) -> tuple[Leaflet]:
         return self.leaflets
@@ -47,4 +47,14 @@ class Node:
     def get_unrun_gaussian_inputs(self) -> tuple[GaussianInputLeaflet]:
         output_stems: tuple[str] = tuple(outputleaflet.path.stem for outputleaflet in self.get_leaflets_bytype(GaussianOutputLeaflet))
         return tuple(inputleaflet for inputleaflet in self.get_leaflets_bytype(GaussianInputLeaflet) if inputleaflet.path.stem not in output_stems)
+
+    def get_incomplete_orca_outputs(self) -> tuple[OrcaOutputLeaflet]:
+        return tuple(outputleaflet for outputleaflet in self.get_leaflets_bytype(OrcaOutputLeaflet) if not outputleaflet.is_completed())
+    
+    def has_incomplete_orca_outputs(self) -> bool:
+        return len(self.get_incomplete_orca_outputs()) > 0
+    
+    def get_unrun_orca_inputs(self) -> tuple[OrcaInputLeaflet]:
+        output_stems: tuple[str] = tuple(outputleaflet.path.stem for outputleaflet in self.get_leaflets_bytype(OrcaOutputLeaflet))
+        return tuple(inputleaflet for inputleaflet in self.get_leaflets_bytype(OrcaInputLeaflet) if inputleaflet.path.stem not in output_stems)
     

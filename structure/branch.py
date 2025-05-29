@@ -11,7 +11,7 @@ from orcaoutputleaflet import OrcaOutputLeaflet
 class Branch:
     def __init__(self, pathstr: str):
         self.path: Path = Path(pathstr)
-        subdirs: tuple[Path] = self.get_subdirs()
+        subdirs: tuple[Path] = self.get_subdirpaths()
         num_executors: int = round(len(subdirs) / ngp.BRANCH_EXECUTOR_DIVISOR)
         if num_executors < 1:
             num_executors = 1
@@ -23,11 +23,11 @@ class Branch:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(path:{self.path},nodes:{self.nodes})"
     
-    def get_subdirs(self) -> tuple[Path]:
-        subdir_paths: list[Path] = list()
+    def get_subdirpaths(self) -> tuple[Path]:
+        subdirpaths: list[Path] = list()
         for path, dirnames, filenames in self.path.walk():
-            subdir_paths.extend(tuple(path.joinpath(dirname) for dirname in dirnames))
-        return tuple(subdir_paths)
+            subdirpaths.extend(tuple(path.joinpath(dirname) for dirname in dirnames))
+        return tuple(subdirpaths)
     
     def get_incomplete_gaussian_outputs(self) -> tuple[GaussianOutputLeaflet]:
         incomplete_outputs: list[GaussianOutputLeaflet] = list()
@@ -39,4 +39,16 @@ class Branch:
         unrun_inputs: list[GaussianInputLeaflet] = list()
         for node in self.nodes:
             unrun_inputs.extend(node.get_unrun_gaussian_inputs())
+        return tuple(unrun_inputs)
+    
+    def get_incomplete_orca_outputs(self) -> tuple[OrcaOutputLeaflet]:
+        incomplete_outputs: list[OrcaOutputLeaflet] = list()
+        for node in self.nodes:
+            incomplete_outputs.extend(node.get_incomplete_orca_outputs())
+        return tuple(incomplete_outputs)
+
+    def get_unrun_orca_inputs(self) -> tuple[OrcaInputLeaflet]:
+        unrun_inputs: list[OrcaInputLeaflet] = list()
+        for node in self.nodes:
+            unrun_inputs.extend(node.get_unrun_orca_inputs())
         return tuple(unrun_inputs)
