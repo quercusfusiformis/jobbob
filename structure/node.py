@@ -1,7 +1,5 @@
 from pathlib import Path
-from concurrent.futures import ProcessPoolExecutor
 
-import num_generating_processes as ngp
 from leaflet import Leaflet
 from gaussianinputleaflet import GaussianInputLeaflet
 from gaussianoutputleaflet import GaussianOutputLeaflet
@@ -23,13 +21,7 @@ def create_respective_leaflet(path: Path) -> Leaflet:
 class Node:
     def __init__(self, pathstr: str):
         self.path: Path = Path(pathstr)
-        subfiles: tuple[Path] = self.get_subfiles()
-        num_executors: int = round(len(subfiles) / ngp.NODE_EXECUTOR_DIVISOR)
-        if num_executors < 1:
-            num_executors = 1
-        # with ProcessPoolExecutor(num_executors) as p:
-            # self.leaflets: tuple[Leaflet] = tuple(leaflet for leaflet in p.map(create_respective_leaflet, subfiles))
-        self.leaflets: tuple[Leaflet] = tuple(create_respective_leaflet(path=filepath) for filepath in subfiles)
+        self.leaflets: tuple[Leaflet] = tuple(create_respective_leaflet(path=filepath) for filepath in self.get_subfiles())
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(path:{self.path},leaflets:{self.leaflets})"
